@@ -14,23 +14,9 @@ add_user() {
     local gid="$5"
     local password="$6"
 
-    # Check if the smb group exists, if not, create it
-    if ! getent group "$groupname" &>/dev/null; then
-        [[ "$groupname" != "smb" ]] && echo "Group $groupname does not exist, creating group..."
-        groupadd -o -g "$gid" "$groupname" > /dev/null || { echo "Failed to create group $groupname"; return 1; }
-    else
-        # Check if the gid right,if not, change it
-        local current_gid
-        current_gid=$(getent group "$groupname" | cut -d: -f3)
-        if [[ "$current_gid" != "$gid" ]]; then
-            [[ "$groupname" != "smb" ]] && echo "Group $groupname exists but GID differs, updating GID..."
-            groupmod -o -g "$gid" "$groupname" > /dev/null || { echo "Failed to update GID for group $groupname"; return 1; }
-        fi
-    fi
-
     # Check if the user already exists, if not, create it
     if ! id "$username" &>/dev/null; then
-        [[ "$username" != "$USER" ]] && echo "User $username does not exist, creating user..."
+        echo "User $username does not exist, creating user..."
         adduser -S -D -h /storage/"$username" -s /sbin/nologin -G "$groupname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
     else
         # Check if the uid right,if not, change it
@@ -52,7 +38,7 @@ add_user() {
     else
         # If the user is not a samba user, create it and set a password
         echo -e "$password\n$password" | smbpasswd -a -c "$cfg" -s "$username" > /dev/null || { echo "Failed to add Samba user $username"; return 1; }
-        [[ "$username" != "$USER" ]] && echo "User $username has been added to Samba and password set."
+        echo "User $username has been added and password set."
     fi
 
     return 0
@@ -73,37 +59,8 @@ if [ -s "$secret" ]; then
     PASS=$(cat "$secret")
 fi
 
-# Check if an external config file was supplied
 if [ -f "$config" ] && [ -s "$config" ]; then
-
-    # Inform the user we are using a custom configuration file.
-    echo "Using provided configuration file: $config."
-
-else
-
-    config="/etc/samba/smb.tmp"
-    template="/etc/samba/smb.default"
-
-    # Generate a config file from template
-    rm -f "$config"
-    cp "$template" "$config"
-
-    # Set custom display name if provided
-    if [ -n "$NAME" ] && [[ "${NAME,,}" != "data" ]]; then
-      sed -i "s/\[Data\]/\[$NAME\]/" "$config"    
-    fi
-
-    # Update force user and force group in smb.conf
-    sed -i "s/^\(\s*\)force user =.*/\1force user = $USER/" "$config"
-    sed -i "s/^\(\s*\)force group =.*/\1force group = $group/" "$config"
-
-    # Verify if the RW variable is equal to false (indicating read-only mode) 
-    if [[ "$RW" == [Ff0]* ]]; then
-        # Adjust settings in smb.conf to set share to read-only
-        sed -i "s/^\(\s*\)writable =.*/\1writable = no/" "$config"
-        sed -i "s/^\(\s*\)read only =.*/\1read only = yes/" "$config"
-    fi
-
+	echo "Using provided configuration file: $config."
 fi
 
 # Check if multi-user mode is enabled
@@ -131,18 +88,6 @@ if [ -f "$users" ] && [ -s "$users" ]; then
         add_user "$config" "$username" "$uid" "$groupname" "$gid" "$password" || { echo "Failed to add user $username"; exit 1; }
 
     done < "$users"
-
-else
-
-    add_user "$config" "$USER" "$UID" "$group" "$GID" "$PASS" || { echo "Failed to add user $USER"; exit 1; }
-
-    if [[ "$RW" != [Ff0]* ]]; then
-        # Set permissions for share directory if new (empty), leave untouched if otherwise
-        if [ -z "$(ls -A "$share")" ]; then
-            chmod 0770 "$share" || { echo "Failed to set permissions for directory $share"; exit 1; }
-            chown "$USER:$group" "$share" || { echo "Failed to set ownership for directory $share"; exit 1; }
-        fi
-    fi
 
 fi
 
