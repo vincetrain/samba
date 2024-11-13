@@ -10,12 +10,6 @@ Original container forked from [dockur/samba](https://github.com/dockur/samba).
 
 This fork is configured to focus more on implementing a multi-user share using Samba homes shares.
 
-## TODO:
-- [ ] Continue modifying container to further fit samba homes share
-- [ ] Finish updating README.md
-
-For more information, refer to the [offical dockerdocs](https://docs.docker.com/build/buildkit/#getting-started)
-
 ## Usage  🐳
 
 Via Docker Compose:
@@ -78,3 +72,5 @@ Or have the following configuration in your `daemon.json`
 }
 ```
 And build normally.
+
+For more information, refer to the [offical dockerdocs](https://docs.docker.com/build/buildkit/#getting-started)
