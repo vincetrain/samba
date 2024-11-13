@@ -12,7 +12,7 @@ RUN set -eu && \
     rm -rf /tmp/* /var/cache/apk/*
 
 COPY --chmod=755 samba.sh /usr/bin/samba.sh
-COPY --chmod=664 smb.conf /etc/samba/smb.default
+COPY --chmod=664 smb.conf /etc/samba/smb.conf
 COPY --chmod=600 users.conf /etc/samba/users.conf
 
 VOLUME /storage
