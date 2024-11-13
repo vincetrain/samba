@@ -20,7 +20,7 @@ This fork is configured to focus more on implementing a multi-user share using S
 - [ ] Continue modifying container to further fit samba homes share
 - [ ] Finish updating README.md
 
-## Building
+## Building  🔨
 Build with buildkit!
 
 Run:
