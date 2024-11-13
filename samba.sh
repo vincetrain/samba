@@ -20,6 +20,7 @@ add_user() {
         adduser -S -D -h /storage/"$username" -s /sbin/nologin -u "$uid" "$username" || { echo "Failed to create user $username"; return 1; }
 	if ! "$username" -eq "$groupname"; then
 		echo "Creating and applying group $groupname to $username..."
+		groupadd -g "$gid" "$groupname"
 		usermod -aG "$groupname" "$username" || { echo "Failed to create group $groupname"; return 1; }
 	fi
     else
