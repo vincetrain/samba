@@ -17,7 +17,11 @@ add_user() {
     # Check if the user already exists, if not, create it
     if ! id "$username" &>/dev/null; then
         echo "User $username does not exist, creating user..."
-        adduser -S -D -h /storage/"$username" -s /sbin/nologin -G "$groupname" -u "$uid" -g "Samba User" "$username" || { echo "Failed to create user $username"; return 1; }
+        adduser -S -D -h /storage/"$username" -s /sbin/nologin -u "$uid" "$username" || { echo "Failed to create user $username"; return 1; }
+	if ! "$username" -eq "$groupname"; then
+		echo "Creating and applying group $groupname to $username..."
+		usermod -aG "$groupname" "$username" || { echo "Failed to create group $groupname"; return 1; }
+	fi
     else
         # Check if the uid right,if not, change it
         local current_uid
