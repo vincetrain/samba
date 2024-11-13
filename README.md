@@ -14,7 +14,7 @@ This fork is configured to focus more on implementing a multi-user share using S
 ## TODO:
 - [ ] Continue modifying container to further fit samba homes share
 - [ ] Finish updating README.md
-
+- [ ] Hide plaintext passwords in users.conf
 
 ## Usage  🐳
 
