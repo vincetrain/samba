@@ -6,6 +6,7 @@
 </div></h1>
 
 Docker container of [Samba](https://www.samba.org/), an implementation of the Windows SMB networking protocol.
+
 Original container forked from [dockur/samba](https://github.com/dockur/samba).
 
 This fork is configured to focus more on implementing a multi-user share using Samba homes shares.
