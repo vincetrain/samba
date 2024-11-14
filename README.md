@@ -29,7 +29,7 @@ services:
 Via Docker CLI:
 
 ```bash
-docker run -it --rm -p 445:445 -v "/home/example/data:/storage" vincetrain/samba
+docker run -it -d -p 445:445 -v "/home/example/data:/storage" vincetrain/samba
 ```
 
 ## Configuration ⚙️
