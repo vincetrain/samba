@@ -36,21 +36,20 @@ add_user() {
         usermod -g "$groupname" "$username" > /dev/null || { echo "Failed to update group for user $username"; return 1; }
     fi
 
-    # Check if the user is a samba user
+    # Check if the user is not a samba user, set password of and enable user for samba if not a user yet
+    # Prevents changed passwords from being overwritten 
     if ! (pdbedit -s "$cfg" -L | grep -q "^$username:"); then
         # If the user is not a samba user, create it and set a password
         echo -e "$password\n$password" | smbpasswd -a -c "$cfg" -s "$username" > /dev/null || { echo "Failed to add Samba user $username"; return 1; }
         echo "User $username has been added and password set."
-        passwd -e "$username"
     fi
 
     return 0
 }
 
 # Set variables for group and share directory
-group="smb"
 share="/storage"
-secret="/run/secrets/pass"
+secret="/run/secrets/users.conf"
 config="/etc/samba/smb.conf"
 users="/etc/samba/users.conf"
 
@@ -59,14 +58,15 @@ mkdir -p "$share" || { echo "Failed to create directory $share"; exit 1; }
 
 # Check if the secret file exists and if its size is greater than zero
 if [ -s "$secret" ]; then
-    PASS=$(cat "$secret")
+    # If secret users.conf exists, use that instead of the default users.conf
+    users=$("$secret")
 fi
 
 if [ -f "$config" ] && [ -s "$config" ]; then
 	echo "Using provided configuration file: $config."
 fi
 
-# Check if multi-user mode is enabled
+# Check if users file exists
 if [ -f "$users" ] && [ -s "$users" ]; then
 
     while read -r line; do
