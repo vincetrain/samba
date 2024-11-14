@@ -12,9 +12,8 @@ Original container forked from [dockur/samba](https://github.com/dockur/samba).
 This fork is configured to focus more on implementing a multi-user share using Samba homes shares.
 
 ## TODO:
-- [ ] Continue modifying container to further fit samba homes share
-- [ ] Finish updating README.md
-- [ ] Hide plaintext passwords in users.conf
+- [ ] Hide plaintext passwords in users.conf (if possible/needed)
+- [ ] Add support for automatic creation of shared shares (with groups)
 
 ## Usage  🐳
 
