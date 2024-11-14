@@ -1,14 +1,7 @@
 services:
   samba:
-    image: dockurr/samba
+    image: vincetrain/samba
     container_name: samba
-    environment:
-      NAME: "Data"    
-      USER: "samba"
-      PASS: "secret"
-      RW: true      # Optional, default true
-      UID: 1000    # Optional, default 1000
-      GID: 1000    # Optional, default 1000
     ports:
       - 445:445
     volumes:
