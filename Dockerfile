@@ -15,9 +15,11 @@ COPY --chmod=600 smb.conf /etc/samba/smb.conf
 COPY --chmod=600 users.conf /etc/samba/users.conf
 COPY --chmod=555 healthcheck.sh /healthcheck.sh
 
+RUN echo -e "nobody\nnobody" | smbpasswd -a nobody
+
 VOLUME /storage
 EXPOSE 445
 
-HEALTHCHECK --interval=60s --timeout=15s CMD /healthcheck.sh
-
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/samba.sh"]
+
+HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L localhost --configfile=/etc/samba.conf -U nobody%nobody -m SMB3 -c 'exit'
