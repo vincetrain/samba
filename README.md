@@ -14,6 +14,7 @@ This fork is configured to focus more on implementing a multi-user share using S
 ## TODO:
 - [ ] Hide plaintext passwords in users.conf (if possible/needed)
 - [ ] Add support for automatic creation of shared shares (with groups)
+- [ ] Write a working healthcheck for this container
 
 ## Usage  🐳
 
