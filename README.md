@@ -12,8 +12,9 @@ Original container forked from [dockur/samba](https://github.com/dockur/samba).
 This fork is configured to focus more on implementing a multi-user share using Samba homes shares.
 
 ## TODO:
-- [ ] Hide plaintext passwords in users.conf (if possible/needed)
-- [ ] Add support for automatic creation of shared shares (with groups)
+- [x] Hide plaintext passwords in users (if possible/needed)
+- [x] Add support for automatic creation of shared shares (with groups)
+- [ ] Create a script for easy management of users
 
 ## Usage  🐳
 
@@ -36,11 +37,13 @@ Via Docker CLI:
 docker run -it --rm -p 445:445 -v "/home/example/data:/storage" vincetrain/samba
 ```
 
+Default credentials are samba:secret, but changing these credentials is recommended.
+
 ## Configuration ⚙️
 
-### How do I connect to a user's home share?
+### How do I connect to a share?
 
-You can connect to a user's share by using the following address: [server-address]/[user name]
+You can connect to a share by using the following address: [server-address]/[user name]
 
 On Windows Explorer, this looks like `\\192.168.2.2\samba`, where "192.168.2.2" is replaced with the address of the server behind this container, and "samba" is replaced by the username".
 
@@ -48,12 +51,18 @@ By default this container is configured to host a share for user "samba" with pa
 
 ### How do I modify the default credentials or add more users?
 
-You can change the default credentials or add more users inside the provided [users.conf](https://github.com/vincetrain/samba/blob/master/users.conf) file, and binding the file into the container as follows:
+You can change the default credentials or add more users inside the provided [users](https://github.com/vincetrain/samba/blob/master/secret/users) file, and binding the file to `/run/secrets/users`, or using the file as a Docker secret if working with Docker swarms.
 
-```yaml
-volumes:
-  - /example/users.conf:/etc/samba/users.conf
-```
+Passwords are stored as NTLM MD4 hashes. To generate a NTLM MD4 hash, consider using the following command:
+
+`echo "password" | iconv -f ASCII -t UTF-16LE | openssl dgst -MD4 -provider legacy | cut -d " " -f2`
+
+replacing "password" with the desired user's password.
+
+### How can I implement a group share?
+
+You can implement group shares by modifying the provided [groupshares](https://github.com/vincetrain/samba/blob/master/secret/groupshares) file, and binding the file to `/run/secrets/groupshares`, or using the file as a Docker secret if working with Docker swarms.
+
 ### How do I modify other settings?
 
 If you need more advanced features, you can completely override the default configuration by modifying the [smb.conf](https://github.com/vincetrain/samba/blob/master/smb.conf) file in this repo, and binding your custom config to the container like this:
