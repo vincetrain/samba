@@ -22,4 +22,4 @@ EXPOSE 445
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/samba.sh"]
 
-HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L localhost --configfile=/etc/samba.conf -U $(cut -d":" -f1-2 -O"%" /run/secrets/agent) -m SMB3 -c 'exit'
+HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L localhost --configfile=/etc/samba.conf -U $(cut -d":" -O"%" -f1-2 /run/secrets/agent) -m SMB3 -c 'exit'

@@ -95,8 +95,8 @@ agent_secrets=$(readlink -f /run/secrets/agent)
 if [ ! -f "/run/agent/agent_created" ]; then
     if [ -s "$agent_secrets" ]; then
         agent_user=$(grep -v "#" $agent_secrets) # remove any comments
-        agent_username=$(cut -d':' -f1 "$agent_user")
-        agent_pass=$(cut -d':' -f2 "$agent_user")
+        agent_username=$(echo "$agent_user" | cut -d':' -f1)
+        agent_pass=$(echo "$agent_user" | cut -d':' -f2)
         
         echo "Agent secrets found! Creating healthcheck agent $agent_username..."
 
