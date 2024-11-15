@@ -13,7 +13,6 @@ RUN set -eu && \
 COPY --chmod=700 samba.sh /usr/bin/samba.sh
 COPY --chmod=600 smb.conf /etc/samba/smb.conf
 COPY --chmod=600 users.conf /etc/samba/users.conf
-COPY --chmod=555 healthcheck.sh /healthcheck.sh
 
 RUN echo -e "nobody\nnobody" | smbpasswd -a nobody
 
