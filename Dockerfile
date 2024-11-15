@@ -12,13 +12,14 @@ RUN set -eu && \
 
 COPY --chmod=700 samba.sh /usr/bin/samba.sh
 COPY --chmod=600 smb.conf /etc/samba/smb.conf
-COPY --chmod=600 users.conf /etc/samba/users.conf
+COPY --chmod=600 secrets/users /run/secrets/users
+COPY --chmod=600 secrets/agent /run/secrets/agent
 
-RUN echo -e "nobody\nnobody" | smbpasswd -a nobody
+RUN 
 
 VOLUME /storage
 EXPOSE 445
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/samba.sh"]
 
-HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L localhost --configfile=/etc/samba.conf -U nobody%nobody -m SMB3 -c 'exit'
+HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L localhost --configfile=/etc/samba.conf -U $(cut -d":" -f1-2 -O"%" /run/secrets/agent) -m SMB3 -c 'exit'
