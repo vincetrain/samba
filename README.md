@@ -50,7 +50,7 @@ You can change the default credentials or add more users inside the provided [us
 
 Passwords are stored as NTLM MD4 hashes. To generate a NTLM MD4 hash, consider using the following command:
 
-`echo "password" | iconv -f ASCII -t UTF-16LE | openssl dgst -MD4 -provider legacy | cut -d " " -f2`
+`iconv -f ASCII -t UTF-16LE <(printf "password") | openssl dgst -MD4 -provider legacy | cut -d " " -f2`
 
 replacing "password" with the desired user's password.
 
