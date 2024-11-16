@@ -33,7 +33,7 @@ add_user() {
     if ! id "$username" &>/dev/null; then
         echo "User $username does not exist, creating user..."
         adduser -S -D -h "/storage/$username" -s /sbin/nologin -u "$uid" "$username" || { echo "Failed to create user $username"; return 1; }
-        if [[ -n "$groupname" || -n "$gid" ]]; then
+        if [ -n "$groupname" ] && [ -n "$gid" ]; then
             echo "Creating and applying group $groupname to $username..."
             # Create group if it doesn't exist yet.
             if ! getent group "$groupname" > /dev/null 2>&1; then
@@ -54,7 +54,9 @@ add_user() {
         fi
 
         # Update user's group
-        usermod -g "$groupname" "$username" > /dev/null || { echo "Failed to update group for user $username"; return 1; }
+        if [ -n "$groupname" ] && [ -n "$gid" ]; then
+            usermod -g "$groupname" "$username" > /dev/null || { echo "Failed to update group for user $username"; return 1; }
+        fi
     fi
 
     # Check if the user is not a samba user, set password of and enable user for samba if not a user yet
