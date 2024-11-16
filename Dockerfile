@@ -7,17 +7,19 @@ RUN set -eu && \
     samba \
     tzdata \
     shadow && \
-    addgroup -S smb && \
     rm -f /etc/samba/smb.conf && \
     rm -rf /tmp/* /var/cache/apk/*
 
-COPY --chmod=755 samba.sh /usr/bin/samba.sh
-COPY --chmod=664 smb.conf /etc/samba/smb.conf
-COPY --chmod=600 users.conf /etc/samba/users.conf
+COPY --chmod=700 samba.sh /usr/bin/samba.sh
+COPY --chmod=600 smb.conf /etc/samba/smb.conf
+COPY --chmod=600 secrets/users /run/secrets/users
+COPY --chmod=600 secrets/agent /run/secrets/agent
+
+RUN 
 
 VOLUME /storage
-EXPOSE 139 445
-
-HEALTHCHECK --interval=60s --timeout=15s CMD smbclient --configfile=/etc/samba.conf -L \\localhost -U % -m SMB3
+EXPOSE 445
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/samba.sh"]
+
+HEALTHCHECK --interval=60s --timeout=15s CMD smbclient -L localhost --configfile=/etc/samba.conf -U $(cut -d":" -O"%" -f1-2 /run/secrets/agent) -m SMB3 -c 'exit'
