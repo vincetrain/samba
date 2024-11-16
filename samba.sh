@@ -33,7 +33,7 @@ add_user() {
     if ! id "$username" &>/dev/null; then
         echo "User $username does not exist, creating user..."
         adduser -S -D -h "/storage/$username" -s /sbin/nologin -u "$uid" "$username" || { echo "Failed to create user $username"; return 1; }
-        if [[ -n "$groupname" && -n "$gid" ]]; then
+        if [[ -a "$groupname" && -a "$gid" ]]; then
             echo "Creating and applying group $groupname to $username..."
             # Create group if it doesn't exist yet.
             if ! getent group "$groupname" > /dev/null 2>&1; then
