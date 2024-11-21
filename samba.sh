@@ -37,7 +37,7 @@ add_user() {
             echo "Creating and applying group $groupname to $username..."
             # Create group if it doesn't exist yet.
             if ! getent group "$groupname" > /dev/null 2>&1; then
-                groupadd -g $gid "$groupname" || { echo "Failed to create group $groupname"; return 1; }
+                groupadd -g "$gid" "$groupname" || { echo "Failed to create group $groupname"; return 1; }
             else
                 echo "Group $groupname already exists. Skipping creation of $groupname group..."
             fi
@@ -96,7 +96,7 @@ agent_secrets=$(readlink -f /run/secrets/agent)
 
 if [ ! -f "/run/agent/agent_created" ]; then
     if [ -s "$agent_secrets" ]; then
-        agent_user=$(grep -v "#" $agent_secrets) # remove any comments
+        agent_user=$(grep -v "#" "$agent_secrets") # remove any comments
         agent_username=$(echo "$agent_user" | cut -d':' -f1)
         agent_pass=$(echo "$agent_user" | cut -d':' -f2)
         
