@@ -15,8 +15,6 @@ COPY --chmod=600 smb.conf /etc/samba/smb.conf
 COPY --chmod=600 secrets/users /run/secrets/users
 COPY --chmod=600 secrets/agent /run/secrets/agent
 
-RUN 
-
 VOLUME /storage
 EXPOSE 445
 
